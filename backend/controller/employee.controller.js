@@ -62,7 +62,6 @@ export const deleteEmployee = async (req, res) => {
 
 export const ratings = async (req, res) => {
     try {
-        // Check if it's a GET request (retrieving ratings)
         if (req.method === 'GET') {
             const { id } = req.params;
             
@@ -70,6 +69,13 @@ export const ratings = async (req, res) => {
                 return res.status(400).json({
                     success: false,
                     message: "Employee ID is required"
+                });
+            }
+            
+            if (!ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid employee ID format"
                 });
             }
             
@@ -85,8 +91,6 @@ export const ratings = async (req, res) => {
             });
         }
         
-        // Handle POST request (adding a rating)
-        // Make sure req.body is not undefined
         if (!req.body) {
             return res.status(400).json({
                 success: false,
@@ -96,7 +100,6 @@ export const ratings = async (req, res) => {
         
         const { employeeId, rating, feedback, period, date } = req.body;
         
-        // Log the request body to debug
         console.log("Request body:", req.body);
         
         if (!employeeId || !rating || !period) {
@@ -111,6 +114,13 @@ export const ratings = async (req, res) => {
             return res.status(400).json({ 
                 success: false, 
                 message: "Rating must be between 1 and 5" 
+            });
+        }
+        
+        if (!ObjectId.isValid(employeeId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid employee ID format"
             });
         }
         

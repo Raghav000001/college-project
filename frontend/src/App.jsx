@@ -10,6 +10,7 @@ import EmployeeDetailsPage from './pages/admin/EmployeeDetailsPage'
 import EmployeeLogin from './pages/employee/Login'
 import EmployeeDashboard from './pages/employee/EmployeeDashboard'
 import EmployeeRatings from './pages/admin/EmployeeRatings'
+import AttendanceManagement from './pages/admin/AttendanceManagement'
 
 function App() {
    const routes=createBrowserRouter(createRoutesFromElements(
@@ -27,6 +28,7 @@ function App() {
       <Route path='/sign-up' element={<SignUp/>}/>
       <Route path='/admin/ratings' element={<EmployeeRatings/>}/>
       <Route path="/employee/:id" element={<EmployeeDetailsPage />} /> 
+      <Route path="/admin/attendance" element={<AttendanceManagement/>} /> 
        <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
       <Route path='/admin/queries' element={< Queries/>}/>
     </Route>

@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import authRouter from "./routes/auth.route.js";
 import queryRouter from "./routes/query.route.js";
 import employeeRouter from "./routes/employee.route.js";
+import attendanceRouter from "./routes/attendance.route.js";
 
 const app = express();
 const port = 3000;
@@ -16,7 +17,9 @@ app.use(bodyParser.json());
 //routes
 app.use("/", authRouter);
 app.use("/", queryRouter);
-app.use("/", employeeRouter); 
+app.use("/", employeeRouter);
+app.use("/", attendanceRouter);
+ 
 
 app.listen(port, () => {
   console.log(`app listening on port ${port}`);
