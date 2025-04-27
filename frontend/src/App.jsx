@@ -9,6 +9,7 @@ import AddEmployee from './pages/admin/AddEmployee'
 import EmployeeDetailsPage from './pages/admin/EmployeeDetailsPage'
 import EmployeeLogin from './pages/employee/Login'
 import EmployeeDashboard from './pages/employee/EmployeeDashboard'
+import EmployeeRatings from './pages/admin/EmployeeRatings'
 
 function App() {
    const routes=createBrowserRouter(createRoutesFromElements(
@@ -24,6 +25,7 @@ function App() {
       {/* //admin routes */}
       <Route path='/admin/employees' element={<AddEmployee/>}/>
       <Route path='/sign-up' element={<SignUp/>}/>
+      <Route path='/admin/ratings' element={<EmployeeRatings/>}/>
       <Route path="/employee/:id" element={<EmployeeDetailsPage />} /> 
        <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
       <Route path='/admin/queries' element={< Queries/>}/>

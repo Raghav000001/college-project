@@ -7,6 +7,8 @@ function AdminDashboard() {
   const [selectedDepartments, setselectedDepartments] = useState("");
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [stats, setStats] = useState({
     totalEmployees: employees.length,
     averageSalary:0,
@@ -44,7 +46,6 @@ function AdminDashboard() {
     try {
       const response= await fetch(`http://localhost:3000/delete/${id}`,{
         method: "DELETE",
-        body:JSON.stringify({id}),
         headers:{
           "Content-Type":"application/json"
         }
@@ -67,6 +68,17 @@ function AdminDashboard() {
       return matchesSearch && matchesDepartment;
         }
     )
+    
+    // Get current employees for pagination
+    const indexOfLastEmployee = currentPage * itemsPerPage;
+    const indexOfFirstEmployee = indexOfLastEmployee - itemsPerPage;
+    const currentEmployees = filteredEmployees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+    
+    // Change page
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    
+    // Calculate total pages
+    const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
 
    useEffect(() => {
     const totalSalary = employees.reduce((sum, employee) => {
@@ -265,7 +277,7 @@ function AdminDashboard() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                  {
-                     filteredEmployees.map((employee, index)=> {
+                     currentEmployees.map((employee, index)=> {
                        return(
                         <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -327,19 +339,46 @@ function AdminDashboard() {
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Showing <span className="font-medium">1</span> to <span className="font-medium">4</span> of{' '}
-                    <span className="font-medium">4</span> results
+                    Showing <span className="font-medium">{indexOfFirstEmployee + 1}</span> to{' '}
+                    <span className="font-medium">
+                      {Math.min(indexOfLastEmployee, filteredEmployees.length)}
+                    </span> of{' '}
+                    <span className="font-medium">{filteredEmployees.length}</span> results
                   </p>
                 </div>
                 <div>
                   <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <button 
+                      onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                        currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                      }`}
+                    >
                       Previous
                     </button>
-                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                      1
-                    </button>
-                    <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    
+                    {[...Array(totalPages).keys()].map(number => (
+                      <button
+                        key={number + 1}
+                        onClick={() => paginate(number + 1)}
+                        className={`relative inline-flex items-center px-4 py-2 border ${
+                          currentPage === number + 1
+                            ? 'bg-blue-50 border-blue-500 text-blue-600'
+                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                        } text-sm font-medium`}
+                      >
+                        {number + 1}
+                      </button>
+                    ))}
+                    
+                    <button
+                      onClick={() => currentPage < totalPages && paginate(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                        currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
+                      }`}
+                    >
                       Next
                     </button>
                   </nav>

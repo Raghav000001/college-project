@@ -26,18 +26,19 @@ function AddEmployee() {
   };
 
   const handleImageChange = (e) => {
-    // const file = e.target.files[0];
-    // if (!file) return;
-  
-    // const reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onload = function () {
-    //   setFormData((prevData) => ({
-    //     ...prevData,
-    //     profileImage: reader.result,
-    //   }));
-    // };
-    };
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          profileImage: reader.result
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   const handleSubmit =async (e) => {
     e.preventDefault();
@@ -96,7 +97,7 @@ function AddEmployee() {
               <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-2">
                 {formData.profileImage ? (
                   <img 
-                    src=''
+                    src={formData.profileImage}
                     alt="Profile Preview" 
                     className="w-full h-full object-cover"
                   />

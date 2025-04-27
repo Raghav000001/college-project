@@ -28,9 +28,9 @@ function AdminHeader() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/admin/dashboard" className="hover:text-blue-200 transition-colors">Dashboard</Link>
-            <Link to="/admin/employees" className="hover:text-blue-200 transition-colors">Employees</Link>
             <Link to="/admin/attendance" className="hover:text-blue-200 transition-colors">Attendance</Link>
             <Link to="/admin/leaves" className="hover:text-blue-200 transition-colors">Leaves</Link>
+            <Link to="/admin/ratings" className="hover:text-blue-200 transition-colors">Ratings</Link>
             <Link to="/admin/salary" className="hover:text-blue-200 transition-colors">Salary</Link>
             <Link to="/admin/queries" className="hover:text-blue-200 transition-colors">Queries</Link>
             
@@ -48,7 +48,6 @@ function AdminHeader() {
               
               {isMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                  <Link to="/admin/profile" className="block px-4 py-2 text-gray-800 hover:bg-blue-100">Profile</Link>
                   <button 
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-100"
@@ -80,7 +79,6 @@ function AdminHeader() {
             <Link to="/admin/leaves" className="block py-2 hover:text-blue-200">Leaves</Link>
             <Link to="/admin/salary" className="block py-2 hover:text-blue-200">Salary</Link>
             <Link to="/admin/queries" className="block py-2 hover:text-blue-200">Queries</Link>
-            <Link to="/admin/profile" className="block py-2 hover:text-blue-200">Profile</Link>
             <Link to="/admin/settings" className="block py-2 hover:text-blue-200">Settings</Link>
             <button 
               onClick={handleLogout}

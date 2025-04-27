@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, data } from 'react-router-dom';
 import AdminHeader from './AdminHeader';
 
 function EmployeeDetailsPage() {
@@ -8,14 +8,39 @@ function EmployeeDetailsPage() {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ratingData, setRatingdata] = useState([]);
 
   useEffect(() => {
-    // Check if id exists before making the request
     if (!id) {
       setError("Employee ID is missing");
       setLoading(false);
       return;
     }
+
+
+    const fetchEmployeeRating = async () => {
+      try {
+        const response= await fetch(`http://localhost:3000/employee-ratings/${id}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })    
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+        console.log("Employee rating data received:", data);
+        setRatingdata(data);
+        
+      } catch (error) {
+        console.log(error.message,"error in fetching employee rating");
+        setError(data.message);
+      }
+    }
+
+
 
     const fetchEmployee = async () => {
       try {
@@ -44,7 +69,27 @@ function EmployeeDetailsPage() {
     };
 
     fetchEmployee();
+    fetchEmployeeRating();
   }, [id]);
+
+  const handleDeleteEmployee = async (id) => {
+    try {
+      const response= await fetch(`http://localhost:3000/delete/${id}`,{
+        method: "DELETE",
+        headers:{
+          "Content-Type":"application/json"
+        }
+      })
+      if (response.ok) {
+        setError("Employee deleted successfully");
+        navigate('/admin/dashboard');
+      } else {
+        setError("Failed to delete employee");
+      }
+    } catch (error) {
+      console.log(error,"error while deleting the data"); 
+    }
+   }
 
   if (loading) {
     return (
@@ -177,10 +222,10 @@ function EmployeeDetailsPage() {
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">Employment Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <p className="text-sm text-gray-500">Employee ID</p>
-                    <p className="text-gray-800 font-medium">{employee._id}</p>
+                    <p className="text-gray-800 font-medium break-words">{employee._id}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Position</p>
@@ -211,40 +256,75 @@ function EmployeeDetailsPage() {
                 </div>
               </div>
               
-              {/* Performance Metrics */}
               <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Performance Metrics</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-gray-50 p-4 rounded-lg text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">{employee.performance?.rating}</div>
-                    <p className="text-sm text-gray-500">Performance Rating</p>
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">Performance Ratings History</h3>
+                
+                {ratingData && ratingData.data && ratingData.data.length > 0 ? (
+                  <div className="space-y-4">
+                    {ratingData.data.map((rating, index) => (
+                      <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
+                          <div>
+                            <span className="text-sm text-gray-500">Period: </span>
+                            <span className="font-medium">{rating.period}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium mr-2">Rating: </span>
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <svg 
+                                  key={i}
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  className={`h-5 w-5 ${i < rating.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                                  viewBox="0 0 20 20" 
+                                  fill="currentColor"
+                                >
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-2">
+                          <span className="text-sm text-gray-500">Date: </span>
+                          <span className="text-sm">{new Date(rating.date).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}</span>
+                        </div>
+                        
+                        {rating.feedback && (
+                          <div className="mt-3">
+                            <p className="text-sm text-gray-500 mb-1">Feedback:</p>
+                            <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded">{rating.feedback}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">{employee.performance?.projects}</div>
-                    <p className="text-sm text-gray-500">Projects Completed</p>
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p>No ratings available for this employee.</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">{employee.performance?.completedTasks}</div>
-                    <p className="text-sm text-gray-500">Tasks Completed</p>
-                  </div>
-                </div>
+                )}
               </div>
               
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit Employee
-                </button>
                 <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                   Generate Report
                 </button>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 flex items-center">
+                <button
+                 onClick={()=> handleDeleteEmployee(employee._id)} 
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
