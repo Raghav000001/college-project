@@ -30,6 +30,7 @@ export const SignUp = () => {
                 "Content-Type": "application/json"
               }
             });
+            console.log(response)
             const data = await response.json();
             if (response.ok) {
              alert("account created successfully");
