@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, data } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import AdminHeader from './AdminHeader';
 
 function EmployeeDetailsPage() {
@@ -9,6 +9,7 @@ function EmployeeDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [ratingData, setRatingdata] = useState([]);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -36,11 +37,9 @@ function EmployeeDetailsPage() {
         
       } catch (error) {
         console.log(error.message,"error in fetching employee rating");
-        setError(data.message);
+        setError(error.message);
       }
     }
-
-
 
     const fetchEmployee = async () => {
       try {
@@ -89,7 +88,93 @@ function EmployeeDetailsPage() {
     } catch (error) {
       console.log(error,"error while deleting the data"); 
     }
-   }
+  }
+
+  const generateEmployeeReport = () => {
+    if (!employee || !ratingData?.data) return;
+    
+    setIsGeneratingReport(true);
+    
+    try {
+      // Calculate average rating if ratings exist
+      let averageRating = 0;
+      if (ratingData.data && ratingData.data.length > 0) {
+        averageRating = ratingData.data.reduce((sum, rating) => sum + rating.rating, 0) / ratingData.data.length;
+      }
+      
+      // Format date
+      const currentDate = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      // Create report content
+      let reportContent = `
+EMPLOYEE PERFORMANCE REPORT
+Generated on: ${currentDate}
+
+EMPLOYEE DETAILS
+-----------------------------------------
+Name: ${employee.firstName} ${employee.lastName}
+Employee ID: ${employee._id}
+Department: ${employee.department}
+Position: ${employee.position}
+Join Date: ${employee.joinDate ? new Date(employee.joinDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not available'}
+Email: ${employee.email}
+Phone: ${employee.phone}
+Address: ${employee.address}
+
+PERFORMANCE SUMMARY
+-----------------------------------------
+Number of Evaluations: ${ratingData.data ? ratingData.data.length : 0}
+Average Rating: ${averageRating ? averageRating.toFixed(1) : 'N/A'} / 5.0
+
+DETAILED PERFORMANCE HISTORY
+-----------------------------------------
+`;
+
+      // Add detailed ratings if they exist
+      if (ratingData.data && ratingData.data.length > 0) {
+        ratingData.data.forEach((rating, index) => {
+          reportContent += `
+Evaluation #${index + 1}
+Period: ${rating.period}
+Date: ${new Date(rating.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+Rating: ${rating.rating}/5
+Feedback: ${rating.feedback || 'None provided'}
+
+`;
+        });
+      } else {
+        reportContent += 'No performance evaluations have been recorded for this employee.\n';
+      }
+      
+      reportContent += `
+
+      
+-----------------------------------------
+End of Report
+`;
+
+      // Create Blob and download
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${employee.firstName}_${employee.lastName}_Performance_Report.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error("Error generating report:", error);
+      setError("Failed to generate report");
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -316,15 +401,21 @@ function EmployeeDetailsPage() {
               
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
-                <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  Generate Report
-                </button>
+                {/* Generate Report Button */}
                 <button
-                 onClick={()=> handleDeleteEmployee(employee._id)} 
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 flex items-center">
+                  onClick={generateEmployeeReport}
+                  disabled={isGeneratingReport}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300 flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  {isGeneratingReport ? 'Generating...' : 'Generate Report'}
+                </button>
+                   
+                <button
+                  onClick={() => handleDeleteEmployee(employee._id)} 
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
