@@ -31,7 +31,7 @@ function AdminHeader() {
             <Link to="/admin/attendance" className="hover:text-blue-200 transition-colors">Attendance</Link>
             <Link to="/admin/leaves" className="hover:text-blue-200 transition-colors">Leaves</Link>
             <Link to="/admin/ratings" className="hover:text-blue-200 transition-colors">Ratings</Link>
-            <Link to="/admin/salary" className="hover:text-blue-200 transition-colors">Salary</Link>
+            <Link to="/admin/salary" className="hover:text-blue-200 transition-colors">Salaries</Link>
             <Link to="/admin/queries" className="hover:text-blue-200 transition-colors">Queries</Link>
             
             {/* User dropdown */}
