@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.route.js";
 import queryRouter from "./routes/query.route.js";
 import employeeRouter from "./routes/employee.route.js";
 import attendanceRouter from "./routes/attendance.route.js";
+import salaryRoute from "./routes/salary.route.js";
 
 const app = express();
 const port = 3000;
@@ -19,6 +20,8 @@ app.use("/", authRouter);
 app.use("/", queryRouter);
 app.use("/", employeeRouter);
 app.use("/", attendanceRouter);
+app.use("/", salaryRoute);
+
  
 
 app.listen(port, () => {
