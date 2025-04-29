@@ -3,120 +3,23 @@ import { Table, Button, DatePicker, Space, message, Select } from 'antd';
 import moment from 'moment';
 import './LeavesComponent.css';
 import AdminHeader from './AdminHeader';
+import axios from 'axios';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-
-// Static data for leave requests
-const staticLeaveData = [
-  {
-    id: 1,
-    employeeId: 'EMP001',
-    employeeName: 'John Doe',
-    leaveType: 'Sick Leave',
-    startDate: '2023-06-10',
-    endDate: '2023-06-12',
-    duration: 3,
-    reason: 'Medical appointment and recovery',
-    status: 'pending'
-  },
-  {
-    id: 2,
-    employeeId: 'EMP002',
-    employeeName: 'Jane Smith',
-    leaveType: 'Vacation',
-    startDate: '2025-03-30',
-    endDate: '2023-06-22',
-    duration: 8,
-    reason: 'Family vacation',
-    status: 'pending'
-  },
-  {
-    id: 3,
-    employeeId: 'EMP003',
-    employeeName: 'Robert Johnson',
-    leaveType: 'Personal Leave',
-    startDate: '2023-06-05',
-    endDate: '2023-06-07',
-    duration: 3,
-    reason: 'Personal matters',
-    status: 'rejected'
-  },
-  {
-    id: 4,
-    employeeId: 'EMP004',
-    employeeName: 'Emily Davis',
-    leaveType: 'Sick Leave',
-    startDate: '2025-04-18',
-    endDate: '2023-06-19',
-    duration: 2,
-    reason: 'Fever and cold',
-    status: 'pending'
-  },
-  {
-    id: 5,
-    employeeId: 'EMP005',
-    employeeName: 'Michael Wilson',
-    leaveType: 'Vacation',
-    startDate: '2023-07-01',
-    endDate: '2023-07-10',
-    duration: 10,
-    reason: 'Summer vacation',
-    status: 'pending'
-  }
-];
 
 const LeavesComponent = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState([
-    moment().subtract(30, 'days'),
-    moment()
+    moment().subtract(30, "days"),
+    moment(),
   ]);
-  const [filterStatus, setFilterStatus] = useState('pending');
-  console.log(dateRange)
+  const [filterStatus, setFilterStatus] = useState("pending");
 
   useEffect(() => {
     fetchLeaveRequests();
   }, [dateRange, filterStatus]);
-
-  const fetchLeaveRequests = () => {
-    setLoading(true);
-    
-    // Filter the static data based on date range and status
-    const filteredData = staticLeaveData.filter(leave => {
-      const startDate = moment(leave.startDate);
-      console.log(startDate)
-      const isInDateRange = startDate.isBetween(dateRange[0], dateRange[1], null, '[]');
-      console.log(isInDateRange)
-      const matchesStatus = filterStatus === 'all' || leave.status === filterStatus;
-      console.log(matchesStatus)
-      
-      return isInDateRange && matchesStatus;
-    });
-    
-    // Simulate API delay
-    setTimeout(() => {
-      setLeaveRequests(filteredData);
-      setLoading(false);
-    }, 500);
-  };
-
-  const handleStatusChange = (leaveId, newStatus) => {
-    setLoading(true);
-    
-    // Update the status in our static data
-    const updatedLeaveRequests = leaveRequests.map(leave => 
-      leave.id === leaveId ? { ...leave, status: newStatus } : leave
-    );
-    
-    // Simulate API delay
-    setTimeout(() => {
-      setLeaveRequests(updatedLeaveRequests);
-      message.success(`Leave request ${newStatus}`);
-      setLoading(false);
-    }, 500);
-  };
 
   const handleDateRangeChange = (dates) => {
     if (dates) {
@@ -126,119 +29,198 @@ const LeavesComponent = () => {
 
   const columns = [
     {
-      title: 'Employee ID',
-      dataIndex: 'employeeId',
-      key: 'employeeId',
+      title: "Employee ID",
+      dataIndex: "employeeId",
+      key: "employeeId",
+      render: (id, record, index) => {
+        // Format employee ID as EMP001, EMP002, etc.
+        const formattedId = `EMP${String(index + 1).padStart(3, '0')}`;
+        return formattedId;
+      }
     },
     {
-      title: 'Employee Name',
-      dataIndex: 'employeeName',
-      key: 'employeeName',
+      title: "Employee Name",
+      dataIndex: "employeeName",
+      key: "employeeName",
     },
     {
-      title: 'Leave Type',
-      dataIndex: 'leaveType',
-      key: 'leaveType',
+      title: "Leave Type",
+      dataIndex: "leaveType",
+      key: "leaveType",
     },
     {
-      title: 'Start Date',
-      dataIndex: 'startDate',
-      key: 'startDate',
-      render: (date) => moment(date).format('DD-MM-YYYY')
+      title: "Start Date",
+      dataIndex: "startDate",
+      key: "startDate",
+      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
-      title: 'End Date',
-      dataIndex: 'endDate',
-      key: 'endDate',
-      render: (date) => moment(date).format('DD-MM-YYYY')
+      title: "End Date",
+      dataIndex: "endDate",
+      key: "endDate",
+      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
-      title: 'Duration (Days)',
-      dataIndex: 'duration',
-      key: 'duration',
+      title: "Duration (Days)",
+      dataIndex: "duration",
+      key: "duration",
     },
     {
-      title: 'Reason',
-      dataIndex: 'reason',
-      key: 'reason',
+      title: "Reason",
+      dataIndex: "reason",
+      key: "reason",
       ellipsis: true,
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
       render: (status) => (
         <span className={`status-badge ${status.toLowerCase()}`}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
-      )
+      ),
     },
     {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        record.status === 'pending' ? (
+      title: "Actions",
+      key: "actions",
+      render: (_, record) =>
+        record.status === "pending" ? (
           <Space>
-            <Button 
-              type="primary" 
-              onClick={() => handleStatusChange(record.id, 'approved')}
+            <Button
+              type="primary"
+              onClick={() => handleStatusChange(record._id, "approved")}
             >
               Approve
             </Button>
-            <Button 
-              danger 
-              onClick={() => handleStatusChange(record.id, 'rejected')}
+            <Button
+              danger
+              onClick={() => handleStatusChange(record._id, "rejected")}
             >
               Reject
             </Button>
           </Space>
         ) : (
           <span>No actions available</span>
-        )
-      ),
+        ),
     },
   ];
+
+  const handleStatusChange = async (leaveId, newStatus) => {
+    setLoading(true);
+    
+    try {
+      // Make API request to update status
+      const response = await fetch(`http://localhost:3000/leave-requests/update/${leaveId}`, 
+        {
+          method: "PUT",
+          body: JSON.stringify({ status: newStatus }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      console.log(response)
+      if (response.status === 200) {
+        // Update the local state to reflect the change immediately
+        setLeaveRequests(prevRequests => 
+          prevRequests.map(request => 
+            request._id === leaveId ? { ...request, status: newStatus } : request
+          )
+        );
+        
+        message.success(`Leave request ${newStatus} successfully`);
+      } else {
+        message.error(`Failed to ${newStatus} leave request`);
+      }
+    } catch (error) {
+      console.log(error)
+      console.error(`Error ${newStatus} leave request:`, error);
+      message.error(`Failed to ${newStatus} leave request: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchLeaveRequests = async () => {
+    setLoading(true);
+    
+    try {
+      // Format dates for API request
+      const startDate = dateRange[0].format('YYYY-MM-DD');
+      const endDate = dateRange[1].format('YYYY-MM-DD');
+      
+      // Make API request with proper status filter
+      const response = await axios.get('http://localhost:3000/leave-requests/all', {
+        params: {
+          startDate,
+          endDate,
+          status: filterStatus !== 'all' ? filterStatus : undefined
+        }
+      });
+      
+      // Sort the data to ensure consistent employee ID assignment
+      const sortedData = response.data.sort((a, b) => 
+        new Date(a.createdAt) - new Date(b.createdAt)
+      );
+      
+      setLeaveRequests(sortedData);
+    } catch (error) {
+      console.error('Error fetching leave requests:', error);
+      message.error('Failed to fetch leave requests: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
       <AdminHeader />
       <div className="leaves-container">
-      <div className="leaves-header">
-        <h1>Employee Leave Requests</h1>
-        <div className="filter-controls">
-          <Space>
-            <span>Date Range:</span>
-            <RangePicker 
-              value={dateRange}
-              onChange={handleDateRangeChange}
-            />
-            <span>Status:</span>
-            <Select 
-              value={filterStatus} 
-              onChange={(value) => setFilterStatus(value)}
-              style={{ width: 120 }}
-            >
-              <Option value="all">All</Option>
-              <Option value="pending">Pending</Option>
-              <Option value="approved">Approved</Option>
-              <Option value="rejected">Rejected</Option>
-            </Select>
-            <Button type="primary" onClick={fetchLeaveRequests}>
-              Refresh
-            </Button>
-          </Space>
+        <div className="leaves-header">
+          <h1>Employee Leave Requests</h1>
+          <div className="filter-controls">
+            <Space>
+              <div className="flex gap-2 flex-col md:flex-row">
+                <div className="flex items-center gap-2 flex-col sm:flex-row">
+                  <span>Date Range:</span>
+                  <RangePicker
+                    value={dateRange}
+                    onChange={handleDateRangeChange}
+                  />
+                </div>
+                <div className="flex items-center gap-2 flex-col sm:flex-row">
+                  <span>Status:</span>
+                  <Select
+                    value={filterStatus}
+                    onChange={(value) => setFilterStatus(value)}
+                    style={{ width: 120 }}
+                  >
+                    <Option value="all">All</Option>
+                    <Option value="pending">Pending</Option>
+                    <Option value="approved">Approved</Option>
+                    <Option value="rejected">Rejected</Option>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2 flex-col sm:flex-row">
+                  <Button type="primary" onClick={fetchLeaveRequests}>
+                    Refresh
+                  </Button>
+                </div>
+              </div>
+            </Space>
+          </div>
         </div>
+
+        <Table
+          columns={columns}
+          dataSource={leaveRequests}
+          rowKey="_id"
+          loading={loading}
+          pagination={{ pageSize: 10 }}
+          scroll={{ x: 1200 }}
+          locale={{ emptyText: 'No leave requests found' }}
+        />
       </div>
-      
-      <Table
-        columns={columns}
-        dataSource={leaveRequests}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-        // scroll={{ x: 1200 }}
-      />
-    </div>
     </div>
   );
 };

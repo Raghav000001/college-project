@@ -51,8 +51,8 @@
     align-items: flex-start;
   }
   
-  .filter-controls {
-    margin-top: 15px;
-    width: 100%;
-  }
+    .filter-controls {
+      margin-top: 15px;
+      width: 100%;
+    }
 }
