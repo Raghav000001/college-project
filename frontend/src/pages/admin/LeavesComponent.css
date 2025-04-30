@@ -1,0 +1,58 @@
+.leaves-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaves-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.leaves-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.filter-controls {
+  margin: 15px 0;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background-color: #faad14;
+  color: #fff;
+}
+
+.status-badge.approved {
+  background-color: #52c41a;
+  color: #fff;
+}
+
+.status-badge.rejected {
+  background-color: #f5222d;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .leaves-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+    .filter-controls {
+      margin-top: 15px;
+      width: 100%;
+    }
+}

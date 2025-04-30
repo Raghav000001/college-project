@@ -7,5 +7,4 @@ const attendanceRouter = router;
 attendanceRouter.post("/mark-attendance", markAttendance);
 attendanceRouter.get("/employee-attendance/:id", getEmployeeAttendance);
 attendanceRouter.get("/all-attendance", getAllAttendance);
-
 export default attendanceRouter;
