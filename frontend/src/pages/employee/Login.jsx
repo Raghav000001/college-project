@@ -5,7 +5,6 @@ function EmployeeLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,15 +20,23 @@ function EmployeeLogin() {
            "Content-Type": "application/json"
        }
       });
-      const data = await response.json();   
+      const data = await response.json();  
+
       if (response.ok) {
-        // Store employee data in localStorage to fetch info on next page nigga
+        // Check if employee data exists
+        if (!data || Object.keys(data).length === 0) {
+          setError("No employee data found. You do not have access.");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Store employee data in localStorage
         localStorage.setItem('employeeData', JSON.stringify(data));
         setIsLoading(false);
         alert("Login successfully");
         navigate('/employee/dashboard');
       } else {
-        setError(data.message || "Login failed");
+        setError(data.message || "No employee found with these credentials. You do not have access.");
         setIsLoading(false);
       }
     } catch (error) {

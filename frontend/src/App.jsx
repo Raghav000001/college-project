@@ -12,6 +12,7 @@ import EmployeeRatings from './pages/admin/EmployeeRatings'
 import AttendanceManagement from './pages/admin/AttendanceManagement'
 import AddEmployee from './pages/admin/addemployee'
 import SalaryManagementPage from './pages/admin/ManageSalaries'
+import NotFound from './components/NotFound'
 
 function App() {
    const routes=createBrowserRouter(createRoutesFromElements(
@@ -33,6 +34,8 @@ function App() {
        <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
        <Route path='/admin/queries' element={< Queries/>}/>
        <Route path='/admin/salary' element={< SalaryManagementPage/>}/>
+       {/* Catch-all route for pages that don't exist */}
+       <Route path="*" element={<NotFound />} />
     </Route>
    ))
 

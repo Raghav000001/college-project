@@ -295,7 +295,7 @@ function AttendanceManagement() {
                   {currentItems.map((item, index) => (
                     <tr 
                       key={item._id || index} 
-                      className="hover:bg-blue-50 transition-all duration-200 transform hover:scale-[1.01] cursor-pointer"
+                      className="hover:bg-blue-50 transition-all duration-200 transform hover:scale-[1.01] cursor-pointer even:bg-gray-50 odd:bg-white"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {formatDate(item.date)}
