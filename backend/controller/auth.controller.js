@@ -3,7 +3,7 @@ import bycrypt from "bcrypt";
 import { createToken } from "../utils/createToken.js";
 
 export const  signup = async (req, res) => {
-     const {fullName,email,password}=req.body;
+     const {name,email,password}=req.body;
       try {
        const collection=await getConnection("admins");
        const existingUser =await collection.findOne({email: email});
@@ -11,10 +11,9 @@ export const  signup = async (req, res) => {
        if (existingUser) {
          return res.status(400).send("admin already exists");
        }
-       if(!fullName || !email || !password){
+       if(!name || !email || !password){
          return res.status(400).json({message:"Please fill all the fields"})
-     }
-   
+     }   
         const salt=bycrypt.genSaltSync(10);
         const hashedPassword=bycrypt.hashSync(req.body.password,salt);
         req.body.password=hashedPassword;
@@ -22,7 +21,6 @@ export const  signup = async (req, res) => {
        createToken(newUser._id,res);
        res.send(newUser);
       } catch (error) {
-        console.log(error)
        console.log(error,"error in sign-up function");
        res.end()
       }
@@ -48,7 +46,6 @@ export const login = async (req, res) => {
               }
           }      
        } catch (error) {
-        console.log(error)
            res.status(500).json({ message: "Something went wrong" });
        }
 

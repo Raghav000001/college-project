@@ -65,6 +65,7 @@ function AddEmployee() {
             address: '',   
             password:'' 
          })
+          navigate('/admin/dashboard')
         } else {
          alert('Something went wrong');
         }

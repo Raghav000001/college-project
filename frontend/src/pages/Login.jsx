@@ -116,6 +116,13 @@ const Login = () => {
               Sign Up
             </Link>
           </p>
+
+
+          <p className="text-gray-600 mt-4">
+    <Link to="/" className="text-indigo-600 font-semibold hover:text-indigo-800 hover:underline">
+      ← Go back to Home Page
+    </Link>
+  </p>
         </div>
       </div>
     </div>

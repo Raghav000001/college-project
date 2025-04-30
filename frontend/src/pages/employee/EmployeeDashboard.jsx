@@ -74,6 +74,7 @@ const EmployeeDashboard = () => {
       console.error("Error checking today's attendance:", error);
     }
   };
+
   // Handle marking attendance
   const markAttendance = async (status) => {
     if (attendanceStatus) {

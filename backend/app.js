@@ -7,14 +7,13 @@ import queryRouter from "./routes/query.route.js";
 import employeeRouter from "./routes/employee.route.js";
 import attendanceRouter from "./routes/attendance.route.js";
 import salaryRoute from "./routes/salary.route.js";
-import leaveRoutes from './routes/leave.route.js';
+import leaveRoutes from "./routes/leave.route.js"
 
 const app = express();
 const port = 3000;
 dotenv.config();
+app.use(express.json());
 app.use(cors());
-app.use(express.json({ limit: '10mb' })); // or larger if needed
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(bodyParser.json());
 
 //routes
@@ -24,6 +23,7 @@ app.use("/", employeeRouter);
 app.use("/", attendanceRouter);
 app.use("/", salaryRoute);
 app.use('/', leaveRoutes);
+
 
  
 

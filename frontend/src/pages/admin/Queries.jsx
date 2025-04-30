@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { FaTrash, FaReply, FaEnvelope, FaUser, FaCalendarAlt } from 'react-icons/fa'
+import { FaTrash, FaEnvelope, FaUser, FaCalendarAlt } from 'react-icons/fa'
 import AdminHeader from './AdminHeader';
 
 function Queries() {
@@ -18,7 +18,13 @@ function Queries() {
     }, [items])
 
     const handleDelete = (id) => {
-        // This function will be implemented later to delete queries
+        axios.delete(`http://localhost:3000/contact/${id}`)
+            .then(() => {
+                setItems(items.filter((item) => item.id !== id));
+            })
+            .catch((error) => {
+                console.error('Error deleting data:', error);
+            });
         console.log("Delete query with ID:", id);
     }
 

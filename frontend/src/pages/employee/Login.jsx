@@ -129,13 +129,12 @@ function EmployeeLogin() {
          
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-600">
-              Don't have an account?{' '}
               <button 
-                onClick={() => navigate('/employee/register')} 
+                onClick={() => navigate('/')} 
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
-                Contact your administrator
-              </button>
+              ← Go back to Home Page
+               </button>
             </p>
           </div>
         </div>
